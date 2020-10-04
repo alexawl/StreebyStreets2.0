@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset='utf-8' />
+    <title>StreeByStreets</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+      <script src='https://npmcdn.com/csv2geojson@latest/csv2geojson.js'></script>
+      <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
 
-<head>
-  <meta charset='utf-8' />
-  <title></title>
-  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
-  <script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" rel="stylesheet" />
-  <script src='https://npmcdn.com/csv2geojson@latest/csv2geojson.js'></script>
-  <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-
-    #map {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 100%;
-    }
-
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+      .marker {
+  background-image: url('https://cdn.glitch.com/f7a658f8-4d83-4326-bc8e-8f57c800d091%2Ficon.png?1601776881744');
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
     /* Popup styling */
 
     .mapboxgl-popup {
@@ -72,15 +77,15 @@
     .mapboxgl-popup-anchor-top>.mapboxgl-popup-tip {
       border-bottom-color: rgb(61, 59, 59);
     }
-  </style>
-</head>
+    </style>
+    
 
-<body>
+  </head>
+  <body>
+    <div id='map'></div>
+    <script>
 
-  <div id='map'></div>
-  <script>
-
-    var transformRequest = (url, resourceType) => {
+      var transformRequest = (url, resourceType) => {
       var isMapboxRequest =
         url.slice(8, 22) === "api.mapbox.com" ||
         url.slice(10, 26) === "tiles.mapbox.com";
@@ -90,28 +95,24 @@
           : url
       };
     };
-    //YOUR TURN: add your Mapbox token 
-    mapboxgl.accessToken = '<Add your Mapbox token >'; //Mapbox token 
+      
+      mapboxgl.accessToken = 'pk.eyJ1IjoiYWxleGF3bCIsImEiOiJja2ZzaXh2MHAwNGlpMnhxZnB2c3Nyemx2In0.Aptu3Nx0vCAkWqdu8I3O0g'; // replace this with your access token
     var map = new mapboxgl.Map({
-      container: 'map', // container id
-      style: 'mapbox://styles/mapbox/streets-v11', //stylesheet location
-      center: [-122.411464, 37.7852299], // starting position
-      zoom: 10,// starting zoom
-      transformRequest: transformRequest
+      container: 'map',
+      style: 'mapbox://styles/alexawl/ckfspl7ye1qba19p78y5ljo53', // replace this with your style URL
+      center: [-80.164534, 26.0303001],  //Starting Position
+      zoom: 10.5  // Starting zoom
     });
-
-    $(document).ready(function () {
+      
+      $(document).ready(function () {
       $.ajax({
         type: "GET",
         //YOUR TURN: Replace with csv export link
-        url: '<Replace with csv export link>',
+        url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTc4KnHgKZ5vli9Jxm0jH5bu_vCQS_3q58ReW-MbXmGNuT0xPDM9UTlH4hUJnpKhwsKFClNplxhL0y-/pubhtml',
         dataType: "text",
         success: function (csvData) { makeGeoJSON(csvData); }
       });
-
-
-
-      function makeGeoJSON(csvData) {
+        function makeGeoJSON(csvData) {
         csv2geojson.csv2geojson(csvData, {
           latfield: 'Latitude',
           lonfield: 'Longitude',
@@ -132,9 +133,23 @@
                 'circle-color': "purple"
               }
             });
-
-
-            // When a click event occurs on a feature in the csvData layer, open a popup at the
+      
+   var geojson = {
+  type: 'FeatureCollection',
+  features: [{
+    type: 'Feature',
+    geometry: {
+      type: 'Point',
+      coordinates: [-80.164534, 26.0303001]
+    },
+    properties: {
+      title: 'Mapbox',
+      description: 'City of Hollywood, Fl'
+    }
+  },
+]
+};
+      // When a click event occurs on a feature in the csvData layer, open a popup at the
             // location of the feature, with description HTML from its properties.
             map.on('click', 'csvData', function (e) {
               var coordinates = e.features[0].geometry.coordinates.slice();
@@ -177,12 +192,7 @@
         });
       };
     });
-
-
-
-
-  </script>
-
-</body>
-
+      
+    </script>
+  </body>
 </html>
